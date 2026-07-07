@@ -2,6 +2,7 @@ from pathlib import Path
 
 from pipeline.processor import PipelineProcessor
 from normalizer.schema import IOC
+from normalizer.normalizer import IOCNormalizer
 
 
 class MockDownloader:
@@ -30,13 +31,13 @@ class MockParserManager:
 
         return [
             IOC(
-                type="ip",
+                type="IP",
                 value="8.8.8.8",
                 source="test_feed.json",
             ),
             IOC(
-                type="domain",
-                value="example.com",
+                type="DOMAIN",
+                value="Example.COM  ",
                 source="test_feed.json",
             ),
         ]
@@ -52,7 +53,7 @@ class MockValidator:
         ioc: IOC,
     ) -> bool:
 
-        return ioc.type == "ip"
+        return True
 
 
 def test_pipeline_process():
@@ -61,14 +62,17 @@ def test_pipeline_process():
         downloader=MockDownloader(),
         parser_manager=MockParserManager(),
         validator=MockValidator(),
+        normalizer=IOCNormalizer(),
     )
 
     result = processor.process(
         "https://example.com/feed.json"
     )
 
-    assert len(result) == 1
+    assert len(result) == 2
 
     assert result[0].type == "ip"
-
     assert result[0].value == "8.8.8.8"
+
+    assert result[1].type == "domain"
+    assert result[1].value == "example.com"
