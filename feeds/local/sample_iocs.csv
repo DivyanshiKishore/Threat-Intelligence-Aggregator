@@ -1,0 +1,5 @@
+indicator,type,source
+8.8.8.8,ipv4,AlienVault
+google.com,domain,OpenPhish
+https://example.com/login,url,URLHaus
+44d88612fea8a8f36de82e1278abb02f,md5,MalwareBazaar

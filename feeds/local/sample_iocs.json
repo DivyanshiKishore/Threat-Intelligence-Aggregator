@@ -1,0 +1,14 @@
+[
+    {
+        "indicator": "8.8.8.8"
+    },
+    {
+        "indicator": "google.com"
+    },
+    {
+        "indicator": "https://example.com/login"
+    },
+    {
+        "indicator": "44d88612fea8a8f36de82e1278abb02f"
+    }
+]
