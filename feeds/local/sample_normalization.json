@@ -1,0 +1,10 @@
+[
+    {
+        "type": "DOMAIN",
+        "value": " Example.COM "
+    },
+    {
+        "type": "URL",
+        "value": " https://Example.COM/Login "
+    }
+]

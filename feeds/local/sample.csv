@@ -1,0 +1,4 @@
+type,value
+ip,192.168.1.10
+domain,evil-example.com
+url,http://malicious-test.com

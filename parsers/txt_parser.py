@@ -47,14 +47,21 @@ class TXTParser(BaseParser):
                 for line in file:
                     value = line.strip()
 
-                    if not value:
+                    if not value or value.startswith("#"):
                         continue
+
+                    # FireHOL .netset format:
+                    # add firehol_level1 1.2.3.4
+                    if value.startswith("add "):
+                        parts = value.split()
+                        if len(parts) >=3:
+                            value = parts[-1]
 
                     iocs.append(
                         IOC(
                             type="unknown",
                             value=value,
-                            source=file_path.name,
+                            sources=[file_path.name],
                         )
                     )
 

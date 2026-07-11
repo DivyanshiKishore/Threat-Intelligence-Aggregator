@@ -1,0 +1,10 @@
+[
+    {
+        "type": "ip",
+        "value": "10.10.10.10"
+    },
+    {
+        "type": "domain",
+        "value": "test-malware.com"
+    }
+]

@@ -83,7 +83,7 @@ class JSONParser(BaseParser):
                 IOC(
                     type=str(ioc_type),
                     value=str(value),
-                    source=file_path.name,
+                    sources=file_path.name,
                 )
             )
 

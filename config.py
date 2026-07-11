@@ -44,7 +44,44 @@ class LoggingConfig:
 
 
 class FeedConfig:
-    """Threat feed definations."""
+    """Threat intelligence feed configuration."""
 
-    JSON_FEEDS = {}
-    
+    FEEDS = [
+        {
+            "name": "FireHOL",
+            "type": "url",
+            "format": "txt",
+            "location": "https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset",
+        },
+        {
+            "name": "OpenPhish",
+            "type": "url",
+            "format": "txt",
+            "location": "https://openphish.com/feed.txt",
+        },
+        {
+            "name": "URLhaus",
+            "type": "url",
+            "format": "csv",
+            "location": "https://urlhaus.abuse.ch/downloads/csv_recent/",
+            "filename": "urlhaus.csv",
+        },
+        {
+            "name": "Local TXT Sample",
+            "type": "file",
+            "format": "txt",
+            "location": PathConfig.LOCAL_FEEDS_DIR / "sample.txt",
+        },
+        {
+            "name": "Local CSV Sample",
+            "type": "file",
+            "format": "csv",
+            "location": PathConfig.LOCAL_FEEDS_DIR / "sample.csv",
+        },
+        {
+            "name": "Local JSON Sample",
+            "type": "file",
+            "format": "json",
+            "location": PathConfig.LOCAL_FEEDS_DIR / "sample.json",
+        },
+    ]

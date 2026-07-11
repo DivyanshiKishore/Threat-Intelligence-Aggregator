@@ -19,6 +19,7 @@ class ParserManager:
     def __init__(self) -> None:
         self._parsers: Dict[str, BaseParser] = {
             ".txt": TXTParser(),
+            ".netset": TXTParser(),   
             ".csv": CSVParser(),
             ".json": JSONParser(),
         }

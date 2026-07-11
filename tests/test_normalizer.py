@@ -8,7 +8,7 @@ def test_domain_normalization():
     original = IOC(
         type="DOMAIN",
         value="  GOOGLE.COM  ",
-        source="test.txt",
+        sources="test.txt",
     )
 
     normalized = normalizer.normalize(original)
@@ -27,7 +27,7 @@ def test_url_normalization():
     original = IOC(
         type="URL",
         value="HTTPS://Example.COM/Login",
-        source="test.txt",
+        sources="test.txt",
     )
 
     normalized = normalizer.normalize(original)
@@ -42,7 +42,7 @@ def test_ip_normalization():
     original = IOC(
         type="IP",
         value="   8.8.8.8   ",
-        source="test.txt",
+        sources="test.txt",
     )
 
     normalized = normalizer.normalize(original)
@@ -57,7 +57,7 @@ def test_tags_are_preserved():
     original = IOC(
         type="DOMAIN",
         value="Example.COM",
-        source="feed.txt",
+        sources="feed.txt",
         tags=["malware", "phishing"],
         confidence=90,
     )

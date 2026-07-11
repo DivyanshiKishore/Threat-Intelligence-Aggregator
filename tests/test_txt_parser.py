@@ -20,5 +20,4 @@ def test_parse_txt(tmp_path: Path):
 
     assert result[0].value == "8.8.8.8"
     assert result[1].value == "example.com"
-
-    assert result[0].source == "feed.txt"
+    assert result[0].sources == ["feed.txt"]

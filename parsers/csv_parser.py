@@ -56,7 +56,26 @@ class CSVParser(BaseParser):
                 newline=""
             ) as file:
 
-                reader = csv.DictReader(file)
+                lines = []
+
+                for line in file:
+                    stripped = line.strip()
+
+                    if not stripped:
+                        continue
+
+                    if stripped.startswith("#"):
+                        header = stripped.lstrip("#").strip()
+
+                        # URLhaus header
+                        if header.startswith("id,"):
+                            lines.append(header)
+
+                        continue
+                    
+                    lines.append(line)
+
+                reader = csv.DictReader(lines)
 
                 if not reader.fieldnames:
                     logger.warning(
@@ -74,14 +93,22 @@ class CSVParser(BaseParser):
                     if not value:
                         value = row.get("indicator")
 
+                    # Support URLhaus feeds
+                    if not value:
+                        value = row.get("url")
+
+                    # Infer IOC type for URLhaus
+                    if value and not ioc_type and row.get("url"):
+                        ioc_type = "url"
+
                     if not value:
                         continue
 
                     iocs.append(
                         IOC(
                             type=ioc_type or "unknown",
-                            value=value.strip(),
-                            source=file_path.name,
+                            value=value,
+                            sources=[file_path.name],
                         )
                     )
 

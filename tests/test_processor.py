@@ -3,6 +3,7 @@ from pathlib import Path
 from pipeline.processor import PipelineProcessor
 from normalizer.schema import IOC
 from normalizer.normalizer import IOCNormalizer
+from deduplication.deduplicator import IOCDeduplicator
 
 
 class MockDownloader:
@@ -33,15 +34,18 @@ class MockParserManager:
             IOC(
                 type="IP",
                 value="8.8.8.8",
-                source="test_feed.json",
+                sources=["feed1.json"],
+                confidence=50,
+                tags=["google"],
             ),
             IOC(
-                type="DOMAIN",
-                value="Example.COM  ",
-                source="test_feed.json",
+                type="IP",
+                value="8.8.8.8",
+                sources=["feed2.json"],
+                confidence=80,
+                tags=["dns"],
             ),
         ]
-
 
 class MockValidator:
     """
@@ -63,16 +67,27 @@ def test_pipeline_process():
         parser_manager=MockParserManager(),
         validator=MockValidator(),
         normalizer=IOCNormalizer(),
+        deduplicator=IOCDeduplicator(),
     )
 
     result = processor.process(
         "https://example.com/feed.json"
     )
 
-    assert len(result) == 2
+    assert len(result) == 1
 
-    assert result[0].type == "ip"
-    assert result[0].value == "8.8.8.8"
+    ioc = result[0]
 
-    assert result[1].type == "domain"
-    assert result[1].value == "example.com"
+    assert ioc.type == "ip"
+    assert ioc.value == "8.8.8.8"
+
+    assert ioc.confidence == 80
+    assert sorted(ioc.sources) == [
+        "feed1.json",
+        "feed2.json",
+    ]
+
+    assert sorted(ioc.tags) == [
+        "dns",
+        "google",
+    ]

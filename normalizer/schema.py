@@ -15,7 +15,7 @@ class IOC:
 
     type: str
     value: str
-    source: str
+    sources: List[str] = field(default_factory=list)
 
     confidence: int = 0
 
