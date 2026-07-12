@@ -1,0 +1,27 @@
+feeds:
+  - name: FireHOL
+    url: https://raw.githubusercontent.com/firehol/blocklist-ipsets/master/firehol_level1.netset
+    parser_type: txt
+    enabled: true
+    update_interval: 3600
+    tags:
+      - ip
+      - blocklist
+
+  - name: OpenPhish
+    url: https://openphish.com/feed.txt
+    parser_type: txt
+    enabled: true
+    update_interval: 3600
+    tags:
+      - phishing
+
+  - name: URLhaus
+    url: https://urlhaus.abuse.ch/downloads/csv_recent/
+    parser_type: csv
+    filename: urlhaus.csv
+    enabled: true
+    update_interval: 3600
+    tags:
+      - malware
+      - url

@@ -34,7 +34,19 @@ def is_ipv6(value: str) -> bool:
         )
     except ValueError:
         return False
-
+    
+def is_ipv4_network(value: str) -> bool:
+    """Return True if value is a valid IPv4 CIDR network."""
+    try:
+        return isinstance(
+            ipaddress.ip_network(
+                value,
+                strict=False,
+            ),
+            ipaddress.IPv4Network,
+        )
+    except ValueError:
+        return False                  
 
 def is_domain(value: str) -> bool:
     """Return True if value is a valid domain."""
@@ -90,12 +102,12 @@ def detect_ioc_type(value: str) -> str | None:
     Detect IOC type.
     """
 
-    if is_ipv4(value):
+    if is_ipv4(value) or is_ipv4_network(value):
         return "ipv4"
-
+    
     if is_ipv6(value):
         return "ipv6"
-
+    
     if is_url(value):
         return "url"
 
@@ -137,4 +149,9 @@ class IOCValidator:
             ioc.value
         )
 
-        return detected_type is not None
+        if detected_type is None:
+            return False
+
+        ioc.type = detected_type
+
+        return True

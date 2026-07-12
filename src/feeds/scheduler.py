@@ -9,16 +9,15 @@ Coordinates feed execution by:
 """
 
 import time
-from pathlib import Path
 
-from config import PathConfig
-from downloader.feed_downloader import FeedDownloader
+from downloader.downloader import Downloader
 from pipeline.processor import PipelineProcessor
 from utils.logger import get_logger
 
 from .models import FeedConfiguration
 from .registry import FeedRegistry
 from .result import FeedExecutionResult
+from .history_manager import FeedHistoryManager
 
 
 logger = get_logger(__name__)
@@ -44,12 +43,18 @@ class FeedScheduler:
     def __init__(
         self,
         registry: FeedRegistry,
-        feed_downloader: FeedDownloader,
+        downloader: Downloader,
         pipeline_processor: PipelineProcessor,
+        history_manager: FeedHistoryManager | None = None,
     ) -> None:
         self.registry = registry
-        self.feed_downloader = feed_downloader
+        self.downloader = downloader
         self.pipeline_processor = pipeline_processor
+        self.history_manager = (
+            history_manager
+            if history_manager is not None
+            else FeedHistoryManager()
+        )
 
     def run(self) -> list[FeedExecutionResult]:
         """
@@ -84,29 +89,17 @@ class FeedScheduler:
 
         start_time = time.perf_counter()
 
+        iocs = []
+
         try:
             logger.info(
                 "Executing feed: %s",
                 feed.name,
             )
 
-            downloaded = self.feed_downloader.download_json_feed(
-                feed.name,
+            iocs = self.pipeline_processor.process(
                 feed.url,
-            )
-
-            if not downloaded:
-                raise RuntimeError(
-                    "Feed download failed"
-                )
-
-            feed_path = (
-                PathConfig.LOCAL_FEEDS_DIR
-                / f"{feed.name}.json"
-            )
-
-            iocs = self.pipeline_processor.process_file(
-                feed_path
+                filename=feed.filename,
             )
 
             execution_time = (
@@ -119,12 +112,17 @@ class FeedScheduler:
                 len(iocs),
             )
 
-            return FeedExecutionResult(
+            result = FeedExecutionResult(
                 feed_name=feed.name,
                 success=True,
                 ioc_count=len(iocs),
                 execution_time=execution_time,
+                iocs=iocs,
             )
+            
+            self.history_manager.update(result)
+
+            return result
 
         except Exception as error:
             execution_time = (
@@ -137,10 +135,15 @@ class FeedScheduler:
                 error,
             )
 
-            return FeedExecutionResult(
+            result = FeedExecutionResult(
                 feed_name=feed.name,
                 success=False,
                 ioc_count=0,
                 execution_time=execution_time,
                 error=str(error),
+                iocs=iocs,
             )
+
+            self.history_manager.update(result)
+
+            return result

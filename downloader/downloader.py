@@ -65,7 +65,10 @@ class Downloader:
         """
 
         if filename is None:
-            filename = url.split("/")[-1]
+            filename = Path(url).name
+
+            if not filename:
+                filename = "download_feed"
 
         destination = self.output_dir / filename
 

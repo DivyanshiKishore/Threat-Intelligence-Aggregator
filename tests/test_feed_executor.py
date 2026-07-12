@@ -24,9 +24,20 @@ def test_executor_executes_scheduler(monkeypatch):
     ]
 
     class DummyScheduler:
-        def __init__(self, registry, feed_downloader, pipeline_processor):
-            self.registry = registry
+        def __init__(
+            self,
+            registry,
+            downloader,
+            pipeline_processor,
+            history_manager=None,
+        ):
 
+            self.registry = registry
+            self.downloader = downloader
+            self.piple_processor = pipeline_processor
+            self.history_manager= history_manager
+
+            
         def run(self):
             return expected_results
 

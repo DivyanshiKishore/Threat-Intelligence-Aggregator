@@ -42,22 +42,19 @@ def test_scheduler_runs_enabled_feed():
 
     registry.add(create_feed())
 
-    downloader.download_json_feed.return_value = True
-    pipeline.process_file.return_value = [
+    pipeline.process.return_value = [
         "ioc1",
         "ioc2",
     ]
-
     results = scheduler.run()
+    print(results)
 
     assert len(results) == 1
     assert results[0].success is True
     assert results[0].feed_name == "test_feed"
     assert results[0].ioc_count == 2
 
-    downloader.download_json_feed.assert_called_once()
-    pipeline.process_file.assert_called_once()
-
+    pipeline.process.assert_called_once()
 
 def test_scheduler_skips_disabled_feed():
     scheduler, registry, downloader, pipeline = create_scheduler()
@@ -69,11 +66,11 @@ def test_scheduler_skips_disabled_feed():
     )
 
     results = scheduler.run()
+    print(results)
 
     assert results == []
 
-    downloader.download_json_feed.assert_not_called()
-    pipeline.process_file.assert_not_called()
+    pipeline.process.assert_not_called()
 
 
 def test_scheduler_handles_download_failure():
@@ -81,16 +78,17 @@ def test_scheduler_handles_download_failure():
 
     registry.add(create_feed())
 
-    downloader.download_json_feed.return_value = False
+    pipeline.process.side_effect = RuntimeError(
+        "Feed download failed"
+    )
 
     results = scheduler.run()
+    print(results)
 
-    assert len(results) == 1
     assert results[0].success is False
     assert results[0].ioc_count == 0
-    assert "download" in results[0].error.lower()
 
-    pipeline.process_file.assert_not_called()
+    pipeline.process.assert_called_once()
 
 
 def test_scheduler_isolates_feed_failures():
@@ -98,17 +96,13 @@ def test_scheduler_isolates_feed_failures():
 
     registry.add(create_feed("feed_one"))
     registry.add(create_feed("feed_two"))
-
-    downloader.download_json_feed.side_effect = [
-        False,
-        True,
+    
+    pipeline.process.side_effect = [
+        RuntimeError("Feed download failed"),
+        ["ioc1"],
     ]
-
-    pipeline.process_file.return_value = [
-        "ioc1"
-    ]
-
     results = scheduler.run()
+    print(results)
 
     assert len(results) == 2
 

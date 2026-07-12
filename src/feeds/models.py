@@ -43,6 +43,7 @@ class FeedConfiguration:
     name: str
     url: str
     parser_type: str
+    filename: str | None = None
     enabled: bool = True
     update_interval: int = 3600
     tags: list[str] = field(default_factory=list)

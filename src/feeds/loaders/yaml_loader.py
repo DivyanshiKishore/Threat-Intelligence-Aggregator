@@ -29,10 +29,8 @@ class YAMLFeedLoader(BaseFeedLoader):
                 name=feed_data["name"],
                 url=feed_data["url"],
                 parser_type=feed_data["parser_type"],
-                enabled=feed_data.get(
-                    "enabled",
-                    True
-                ),
+                filename=feed_data.get("filename"),
+                enabled=feed_data.get("enabled", True),
                 update_interval=feed_data.get(
                     "update_interval",
                     3600

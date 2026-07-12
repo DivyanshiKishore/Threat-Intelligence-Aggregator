@@ -7,7 +7,7 @@ Coordinates:
 - executing enabled feeds
 """
 
-from downloader.feed_downloader import FeedDownloader
+from downloader.downloader import Downloader
 from pipeline.processor import PipelineProcessor
 from utils.logger import get_logger
 
@@ -39,7 +39,7 @@ class FeedExecutor:
     def __init__(
         self,
         loader: BaseFeedLoader,
-        downloader: FeedDownloader,
+        downloader: Downloader,
         pipeline_processor: PipelineProcessor,
     ) -> None:
         self.loader = loader
@@ -75,7 +75,7 @@ class FeedExecutor:
 
         scheduler = FeedScheduler(
             registry=registry,
-            feed_downloader=self.downloader,
+            downloader=self.downloader,
             pipeline_processor=self.pipeline_processor,
         )
 
